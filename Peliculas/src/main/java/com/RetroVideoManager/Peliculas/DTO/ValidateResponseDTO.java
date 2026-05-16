@@ -7,4 +7,5 @@ public class ValidateResponseDTO {
     private boolean valid;
     private String username;
     private String rol;
+    
 }
