@@ -1,19 +1,26 @@
 package com.ProyectoFullStack.Autenticacion.ServiceAutenticacion;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import com.ProyectoFullStack.Autenticacion.RepositoryAutenticacion.UserRepository;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import com.ProyectoFullStack.Autenticacion.DTO.AuthResponseDTO;
 import com.ProyectoFullStack.Autenticacion.DTO.LoginRequestDTO;
 import com.ProyectoFullStack.Autenticacion.DTO.RegisterRequestDTO;
+import com.ProyectoFullStack.Autenticacion.DTO.UsuarioRegisterDTO;
+import com.ProyectoFullStack.Autenticacion.DTO.ValidateResponseDTO;
 import com.ProyectoFullStack.Autenticacion.Entity.RolEntity;
 import com.ProyectoFullStack.Autenticacion.Entity.UsuarioEntity;
 import com.ProyectoFullStack.Autenticacion.RepositoryAutenticacion.RolRepository;
+import com.ProyectoFullStack.Autenticacion.RepositoryAutenticacion.UserRepository;
 import com.ProyectoFullStack.Autenticacion.Util.JwtUtil;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
-import com.ProyectoFullStack.Autenticacion.DTO.AuthResponseDTO;
-import com.ProyectoFullStack.Autenticacion.DTO.ValidateResponseDTO;
+
 @Service
 public class authService {
+
     @Autowired
     private UserRepository userRepository;
 
@@ -25,6 +32,10 @@ public class authService {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    @Qualifier("usuariosClient")
+    private WebClient usuariosClient;
 
     public AuthResponseDTO authenticate(LoginRequestDTO loginRequest) {
         UsuarioEntity user = userRepository.findByUsername(loginRequest.getUsername())
@@ -55,16 +66,31 @@ public class authService {
         newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         newUser.setRol(rol);
         newUser.setEmail(registerRequest.getEmail());
-
         userRepository.save(newUser);
-        String token = jwtUtil.generateToken(newUser.getUsername(), newUser.getRol().getName());
+
+        // Crear perfil básico en el servicio Usuarios
+        try {
+            UsuarioRegisterDTO perfilBasico = new UsuarioRegisterDTO(
+                    registerRequest.getUsername(),
+                    registerRequest.getEmail());
+            usuariosClient.post()
+                    .uri("/api/v1/usuarios/internal/register")
+                    .bodyValue(perfilBasico)
+                    .retrieve()
+                    .bodyToMono(Void.class)
+                    .block();
+        } catch (Exception e) {
+            // El registro de credenciales ya fue exitoso; el perfil puede completarse después
+        }
+
+        String token = jwtUtil.generateToken(newUser.getUsername(), rol.getName());
         return new AuthResponseDTO(token, newUser.getUsername(), rol.getName());
     }
+
     public ValidateResponseDTO validateToken(String token) {
         if (!jwtUtil.isTokenValid(token)) {
             throw new RuntimeException("Token inválido o expirado");
         }
-
         String username = jwtUtil.extractUsername(token);
         String role = jwtUtil.extractRole(token);
         return new ValidateResponseDTO(true, username, role);

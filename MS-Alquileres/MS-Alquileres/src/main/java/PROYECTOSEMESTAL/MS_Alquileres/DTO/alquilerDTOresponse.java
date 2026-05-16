@@ -1,21 +1,21 @@
 package PROYECTOSEMESTAL.MS_Alquileres.DTO;
 
-import java.time.LocalDate;
 
 import PROYECTOSEMESTAL.MS_Alquileres.Modelo.cinta;
+import PROYECTOSEMESTAL.MS_Alquileres.Modelo.usuario;
 import lombok.Data;
 
 @Data
 public class alquilerDTOresponse {
     private Long id;
-
+    private usuario Usuario;
     private cinta cinta;
 
-    private LocalDate fechaAlquiler;
+    private String fechaAlquiler;
 
-    private LocalDate fechaDevolucion;
+    private String fechaDevolucion;
 
-    private LocalDate fechaLimite;
+    private String fechaLimite;
 
     private String devuelto;
 

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import java.util.List;
 
@@ -22,7 +23,10 @@ import java.util.List;
 @RequestMapping("/api/cintas")
 @RequiredArgsConstructor
 public class controller_cinta {
-    private final Service_cinta service;
+    
+
+    @Autowired 
+    private Service_cinta service;
 
     @GetMapping
     public ResponseEntity<List<cinta>> obtenerTodas() {

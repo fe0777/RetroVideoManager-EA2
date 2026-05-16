@@ -6,21 +6,15 @@ import lombok.Data;
 
 @Data
 public class pagoRequestDTO {
-    @NotNull(message = "El ID del pago es obligatorio")
-    private Integer idPago;
+
+    @NotNull(message = "El ID de la película es obligatorio")
+    private Long peliculaId;
 
     @NotBlank(message = "El método de pago es obligatorio")
-    private String metodoPago; // Ejemplo: "Tarjeta de Crédito", "PayPal", "Efectivo", "Cheque" "Tarjeta de debito" etc.
+    private String metodoPago;
 
     @NotNull(message = "El monto es obligatorio")
     private Double monto;
 
-    @NotBlank(message = "La fecha de pago es obligatoria")
-    private String fechaPago;
-
-    @NotBlank(message = "El estado del pago es obligatorio")
-    private String estadoPago; // Ejemplo: "Pendiente", "Completado", "Fallido", "Reembolsado" etc.
-
-    @NotBlank(message = "El número de tarjeta es obligatorio")
-    private String nroTarjeta; // debito o credito.
+    private String nroTarjeta;
 }

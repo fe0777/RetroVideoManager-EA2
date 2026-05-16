@@ -3,6 +3,7 @@ package PROYECTOSEMESTAL.MS_Alquileres.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import PROYECTOSEMESTAL.MS_Alquileres.Modelo.alquiler;
@@ -16,8 +17,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class Service_alquiler {
     
-private repository_alquiler repository;
-
+    @Autowired
+    private repository_alquiler repository;
+    
     public List<alquilerDTOresponse> findAll(){ 
         return repository.findAll().stream()
             .map(alquiler -> {

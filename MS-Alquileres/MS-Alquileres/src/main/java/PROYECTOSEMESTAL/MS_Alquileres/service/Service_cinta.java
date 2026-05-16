@@ -3,6 +3,7 @@ package PROYECTOSEMESTAL.MS_Alquileres.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import PROYECTOSEMESTAL.MS_Alquileres.Modelo.cinta;
@@ -15,7 +16,9 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @RequiredArgsConstructor
 public class Service_cinta {
-private repository_cinta Repository;
+    
+    @Autowired
+    private repository_cinta Repository;
 
     public List<cinta> obtenerTodas() {
         return Repository.findAll();

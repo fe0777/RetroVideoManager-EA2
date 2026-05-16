@@ -3,19 +3,15 @@ package com.RetroVideoManager.Pago.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import com.RetroVideoManager.Pago.DTO.pagoRequestDTO;
 import com.RetroVideoManager.Pago.DTO.pagoResponseDTO;
 import com.RetroVideoManager.Pago.Service.pagoService;
-import com.RetroVideoManager.Pago.DTO.pagoRequestDTO;
-import org.springframework.http.ResponseEntity;
+
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/pagos")
 public class pagoController {
@@ -23,12 +19,13 @@ public class pagoController {
     @Autowired
     private pagoService pagoService;
 
-    @GetMapping ResponseEntity<List<pagoResponseDTO>> findAll(){
+    @GetMapping
+    public ResponseEntity<List<pagoResponseDTO>> findAll() {
         return ResponseEntity.ok(pagoService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<pagoResponseDTO> findById(@PathVariable Integer id){
+    public ResponseEntity<pagoResponseDTO> findById(@PathVariable Integer id) {
         pagoResponseDTO pago = pagoService.findById(id);
         if (pago == null) {
             return ResponseEntity.notFound().build();
@@ -36,24 +33,31 @@ public class pagoController {
         return ResponseEntity.ok(pago);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable Integer id){
-        pagoService.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @PostMapping
-    public ResponseEntity<pagoResponseDTO> save(@RequestBody pagoRequestDTO  pagoRequestDTO){
-        pagoResponseDTO savedPago = pagoService.save(pagoRequestDTO);
-        return ResponseEntity.status(201).body(savedPago);
+    public ResponseEntity<?> save(
+            @RequestHeader("Authorization") String token,
+            @Valid @RequestBody pagoRequestDTO pagoRequestDTO) {
+        try {
+            pagoResponseDTO saved = pagoService.save(pagoRequestDTO, token);
+            return ResponseEntity.status(201).body(saved);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("{\"error\":\"" + e.getMessage() + "\"}");
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<pagoResponseDTO> update(@PathVariable Integer id, @RequestBody pagoRequestDTO pagoRequestDTO){
-        pagoResponseDTO updatedPago = pagoService.update(id, pagoRequestDTO);
-        if (updatedPago == null) {
+    public ResponseEntity<pagoResponseDTO> update(@PathVariable Integer id,
+            @RequestBody pagoRequestDTO pagoRequestDTO) {
+        pagoResponseDTO updated = pagoService.update(id, pagoRequestDTO);
+        if (updated == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(updatedPago);
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Integer id) {
+        pagoService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -18,9 +18,18 @@ public class PagoModel {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Integer idPago;
-    
+
     @Column(nullable = false)
-    private String metodoPago; // Ejemplo: "Tarjeta de Crédito", "PayPal", "Efectivo", "Cheque" "Tarjeta de debito" etc.
+    private Long peliculaId;
+
+    @Column(nullable = false)
+    private Long usuarioId;
+
+    @Column(nullable = false)
+    private String username;
+
+    @Column(nullable = false)
+    private String metodoPago;
 
     @Column(nullable = false)
     private Double monto;
@@ -29,9 +38,8 @@ public class PagoModel {
     private String fechaPago;
 
     @Column(nullable = false)
-    private String estadoPago; // Ejemplo: "Pendiente", "Completado", "Fallido", "Reembolsado" etc.
+    private String estadoPago;
 
     @Column(nullable = true)
-    private String nroTarjeta; // debito o credito.
-
+    private String nroTarjeta;
 }

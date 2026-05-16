@@ -1,6 +1,5 @@
 package PROYECTOSEMESTAL.MS_Alquileres.Modelo;
 
-import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,11 +28,11 @@ public class alquiler {
     @JoinColumn(name = "cinta_id", nullable = false)
     private cinta cinta;
 
-    private LocalDate fechaAlquiler;
+    private String fechaAlquiler;
 
-    private LocalDate fechaDevolucion;
+    private String fechaDevolucion;
 
-    private LocalDate fechaLimite;
+    private String fechaLimite;
 
     private String devuelto;
 
