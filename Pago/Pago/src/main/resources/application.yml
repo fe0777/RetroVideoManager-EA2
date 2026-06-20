@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: Pago
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/Pago_db}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+server:
+  port: 8084
+
+services:
+  autenticacion:
+    url: ${SERVICES_AUTENTICACION_URL:http://localhost:8081}
+  peliculas:
+    url: ${SERVICES_PELICULAS_URL:http://localhost:8083}
+  usuarios:
+    url: ${SERVICES_USUARIOS_URL:http://localhost:8082}
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /doc/swagger-ui.html

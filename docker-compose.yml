@@ -1,0 +1,190 @@
+﻿services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - ea3-network
+
+  autenticacion:
+    build:
+      context: ./Autenticacion/Autenticacion
+    container_name: autenticacion
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/autenticacion_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SERVICES_USUARIOS_URL: http://usuarios:8082
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - ea3-network
+
+  usuarios:
+    build:
+      context: ./Usuarios/Usuarios/Usuarios
+    container_name: usuarios
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/usuarios_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - ea3-network
+
+  peliculas:
+    build:
+      context: ./Peliculas/Peliculas
+    container_name: peliculas
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/peliculasdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      AUTENTICACION_SERVICE_URL: http://autenticacion:8081
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - ea3-network
+
+  pago:
+    build:
+      context: ./Pago/Pago
+    container_name: pago
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/Pago_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SERVICES_AUTENTICACION_URL: http://autenticacion:8081
+      SERVICES_PELICULAS_URL: http://peliculas:8083
+      SERVICES_USUARIOS_URL: http://usuarios:8082
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - ea3-network
+
+  membresias:
+    build:
+      context: ./membresias/membresias
+    container_name: membresias
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/membresiasdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - ea3-network
+
+  notificaciones:
+    build:
+      context: ./notificaciones/notificaciones
+    container_name: notificaciones
+    ports:
+      - "8086:8086"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/notificacionesdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - ea3-network
+
+  reparacion:
+    build:
+      context: ./reparacion/reparacion/reparacion
+    container_name: reparacion
+    ports:
+      - "8087:8087"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/DB_REPARACION
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - ea3-network
+
+  ventas:
+    build:
+      context: ./Ventas/Ventas
+    container_name: ventas
+    ports:
+      - "8088:8088"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ventas_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - ea3-network
+
+  ms-alquileres:
+    build:
+      context: ./MS-Alquileres/MS-Alquileres/MS-Alquileres
+    container_name: ms-alquileres
+    ports:
+      - "8089:8089"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/DB_MS_ALQ
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - ea3-network
+
+  ms-inventario-fisico:
+    build:
+      context: ./MS_Inventario_Fisico/MS_Inventario_Fisico/MS_Inventario_Fisico
+    container_name: ms-inventario-fisico
+    ports:
+      - "8090:8090"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/DB_MS_INV_FIS
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - ea3-network
+
+volumes:
+  mysql_data:
+
+networks:
+  ea3-network:
+    driver: bridge
