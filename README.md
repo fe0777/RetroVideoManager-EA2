@@ -2,6 +2,8 @@
 
 Proyecto semestral desarrollado para la asignatura Desarrollo Fullstack I.
 
+**Última actualización:** Junio 2026
+
 ## Descripción
 
 RetroVideo Manager es un sistema basado en arquitectura de microservicios para la gestión integral de una tienda de cintas VHS.
