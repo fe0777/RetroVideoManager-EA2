@@ -36,7 +36,7 @@
 
   usuarios:
     build:
-      context: ./Usuarios/Usuarios/Usuarios
+      context: ./Usuarios
     container_name: usuarios
     ports:
       - "8082:8082"
